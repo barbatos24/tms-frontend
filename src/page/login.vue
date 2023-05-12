@@ -3,22 +3,22 @@
 	  	<transition name="form-fade" mode="in-out">
 	  		<section class="form_contianer" v-show="showLogin">
 		  		<div class="manage_tip">
-		  			<p>elm后台管理系统</p>
+		  			<p>TMS后台管理系统</p>
 		  		</div>
 		    	<el-form :model="loginForm" :rules="rules" ref="loginForm">
-					<el-form-item prop="username">
-						<el-input v-model="loginForm.username" placeholder="用户名"><span>dsfsf</span></el-input>
+					<el-form-item prop="account">
+						<el-input v-model="loginForm.account" placeholder="账户名称"></el-input>
 					</el-form-item>
 					<el-form-item prop="password">
-						<el-input type="password" placeholder="密码" v-model="loginForm.password"></el-input>
+						<el-input v-model="loginForm.password" type="password" placeholder="密码"></el-input>
 					</el-form-item>
 					<el-form-item>
 				    	<el-button type="primary" @click="submitForm('loginForm')" class="submit_btn">登录</el-button>
 				  	</el-form-item>
+					<el-form-item>
+				    	<el-button @click="submitForm('loginForm')" class="submit_btn">注册</el-button>
+				  	</el-form-item>
 				</el-form>
-				<p class="tip">温馨提示：</p>
-				<p class="tip">未登录过的新用户，自动注册</p>
-				<p class="tip">注册过的用户可凭账号密码登录</p>
 	  		</section>
 	  	</transition>
   	</div>
@@ -32,18 +32,18 @@
 	    data(){
 			return {
 				loginForm: {
-					username: '',
+					account: '',
 					password: '',
 				},
 				rules: {
-					username: [
-			            { required: true, message: '请输入用户名', trigger: 'blur' },
+					account: [
+			            { required: true, message: '请输入账户名称', trigger: 'blur' },
 			        ],
 					password: [
 						{ required: true, message: '请输入密码', trigger: 'blur' }
 					],
 				},
-				showLogin: false,
+				showLogin: true,
 			}
 		},
 		mounted(){
@@ -53,25 +53,25 @@
     		}
 		},
 		computed: {
-			...mapState(['adminInfo']),
+			//...mapState(['adminInfo']),
 		},
 		methods: {
-			...mapActions(['getAdminData']),
+			//...mapActions(['getAdminData']),
 			async submitForm(formName) {
 				this.$refs[formName].validate(async (valid) => {
 					if (valid) {
-						const res = await login({user_name: this.loginForm.username, password: this.loginForm.password})
-						if (res.status == 1) {
+						const resultData = await login(this.loginForm);
+						if(resultData.code==200){
 							this.$message({
-		                        type: 'success',
-		                        message: '登录成功'
-		                    });
-							this.$router.push('manage')
+						        type: 'success',
+						        message: '登录成功'
+						    });
+						 	this.$router.push('manage')
 						}else{
 							this.$message({
-		                        type: 'error',
-		                        message: res.message
-		                    });
+								type: 'error',
+								message: resultData.msg
+							});
 						}
 					} else {
 						this.$notify.error({
